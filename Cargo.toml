@@ -1,0 +1,16 @@
+[dev-dependencies]
+
+[package]
+name = "parallel_operations"
+version = "0.1.0"
+edition = "2021"
+authors = ["Jonathan Day"]
+description = "A library to perform binary operations in parallel using threads"
+license = "MIT"
+repository = "https://github.com/jon429r/parallel_operations"
+
+
+[dependencies]
+libc = "0.2.164"
+num_cpus = "1.16.0"
+rayon = "1.10.0"
