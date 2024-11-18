@@ -1,5 +1,18 @@
 use rayon::prelude::*;
 
+/// Performs a parallel binary operation on a vector of data.
+///
+/// This function divides the data into chunks, processes each chunk in parallel using
+/// multiple threads, and combines the results using the provided binary operation.
+///
+/// # Parameters
+/// - `data`: A vector of type `T` that contains the data to operate on.
+/// - `operation`: A closure that takes two operands of type `T` and returns a result of type `T`.
+///
+/// # Returns
+/// The result of applying the binary operation to all elements of the vector.
+///
+/// ```
 pub fn parallel_binary_operation<T>(data: Vec<T>, operation: fn(T, T) -> T) -> T
 where
     T: Copy + Send + Sync + 'static + Default,
@@ -58,3 +71,5 @@ mod tests {
         assert_eq!(result, 15); // 1 + 2 + 3 + 4 + 5 = 15
     }
 }
+
+
