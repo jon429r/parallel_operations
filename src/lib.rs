@@ -1,6 +1,17 @@
 use rayon::prelude::*;
 
 /// Gets the initial value for a binary operation.
+///
+/// This function determines the initial value based on the result of the operation
+/// when applied to two sample values. It is used to determine the initial value
+/// for parallel binary operations.
+///
+/// # Parameters
+/// - `operation`: A closure that takes two operands of type `T` and returns a result of type `T`.
+///
+/// # Returns
+/// The initial value for the binary operation based on the sample result.
+/// For now either 0 or 1.
 fn get_initial_value<T>(operation: fn(T, T) -> T) -> T
 where
     T: Copy + Send + Sync + 'static + Default + PartialEq + From<u8>,

@@ -57,9 +57,8 @@ dependencies = [
 
 [[package]]
 name = "parallel_operations"
-version = "0.1.2"
+version = "0.1.4"
 dependencies = [
- "libc",
  "num_cpus",
  "rayon",
 ]

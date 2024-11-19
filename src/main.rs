@@ -9,7 +9,7 @@ fn main() {
     let mut par_total: Duration = Duration::new(0, 0);
 
     for _i in 0..10 {
-        let large_data: Vec<i128> = (1..=10_000_000).collect(); // 10 million numbers
+        let large_data: Vec<i128> = (1..=10_000).collect(); // 10 million numbers
 
         // Measure time for parallel computation
         let start_parallel = Instant::now();
