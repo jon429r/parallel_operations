@@ -2,7 +2,7 @@
 
 [package]
 name = "parallel_operations"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["Jonathan Day"]
 description = "A library to perform binary operations in parallel using threads"

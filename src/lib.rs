@@ -1,5 +1,20 @@
 use rayon::prelude::*;
 
+/// Gets the initial value for a binary operation.
+fn get_initial_value<T>(operation: fn(T, T) -> T) -> T
+where
+    T: Copy + Send + Sync + 'static + Default + PartialEq + From<u8>,
+{
+    let test_result = operation(T::from(8), T::from(8));
+    match test_result {
+        _ if test_result == T::from(16) => T::from(0), // For addition, use 0 as initial value
+        _ if test_result == T::from(64) => T::from(1), // For multiplication, use 1 as initial value
+        _ if test_result == T::from(0) => T::from(0),  // For subtraction, use 0 as initial value
+        _ if test_result == T::from(1) => T::from(1),  // For division, use 1 as initial value
+        _ => T::default(),                             // Default case
+    }
+}
+
 /// Performs a parallel binary operation on a vector of data.
 ///
 /// This function divides the data into chunks, processes each chunk in parallel using
@@ -12,29 +27,28 @@ use rayon::prelude::*;
 /// # Returns
 /// The result of applying the binary operation to all elements of the vector.
 ///
-/// ```
 pub fn parallel_binary_operation<T>(data: Vec<T>, operation: fn(T, T) -> T) -> T
 where
-    T: Copy + Send + Sync + 'static + Default,
+    T: Copy + Send + Sync + 'static + Default + PartialEq + From<u8>,
 {
     if data.is_empty() {
         return T::default();
     }
+    if data.len() == 1 {
+        return data[0];
+    }
+
+    let initial = get_initial_value(operation);
 
     let threads = num_cpus::get(); // Automatically use the number of available cores
-
     let chunk_size = (data.len() + threads - 1) / threads;
 
     // Perform the operation in parallel across chunks of data
     data.par_chunks(chunk_size)
-        .map(|chunk| {
-            chunk
-                .iter()
-                .copied()
-                .fold(T::default(), |a, b| operation(a, b))
-        })
-        .reduce(|| T::default(), |a, b| operation(a, b)) // Reduce results using operation
+        .map(|chunk| chunk.iter().copied().fold(initial, |a, b| operation(a, b)))
+        .reduce(|| initial, |a, b| operation(a, b)) // Reduce results using operation
 }
+
 #[cfg(test)]
 mod tests {
     use super::*; // Import the public functions for testing
@@ -45,6 +59,14 @@ mod tests {
         let data = vec![1, 2, 3, 4, 5];
         let result = parallel_binary_operation(data, |a, b| a + b);
         assert_eq!(result, 15); // Expected result: 1 + 2 + 3 + 4 + 5 = 15
+    }
+
+    // Test for multiplication operation
+    #[test]
+    fn test_parallel_multiplication() {
+        let data = vec![1, 2, 3, 4, 5];
+        let result = parallel_binary_operation(data, |a, b| a * b);
+        assert_eq!(result, 120); // Expected result: 1 * 2 * 3 * 4 * 5 = 120
     }
 
     // Test for single element vector
@@ -71,5 +93,3 @@ mod tests {
         assert_eq!(result, 15); // 1 + 2 + 3 + 4 + 5 = 15
     }
 }
-
-
